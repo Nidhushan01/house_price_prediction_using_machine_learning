@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>House Price Estimator</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>House Price Estimator</h1>
+        <form id="price-form">
+            <label for="sqft">Total Square Feet:</label>
+            <input type="number" id="sqft" name="sqft" required>
+
+            <label for="location">Location:</label>
+            <select id="location" name="location" required>
+                {% for loc in locations %}
+                    <option value="{{ loc }}">{{ loc }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="bhk">Number of Bedrooms:</label>
+            <input type="number" id="bhk" name="bhk" min="1" step="1" required>
+
+            <label for="bath">Number of Bathrooms:</label>
+            <input type="number" id="bath" name="bath" min="1" step="1" required>
+
+            <button type="submit">Predict Price</button>
+        </form>
+
+        <h2 id="result"></h2>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#price-form').on('submit', function(event) {
+                event.preventDefault();
+                $.ajax({
+                    url: '/predict',
+                    method: 'POST',
+                    data: $(this).serialize(),
+                    success: function(response) {
+                        $('#result').html('Estimated Price: ' + response.estimated_price + ' Lakhs');
+                    },
+                    error: function() {
+                        $('#result').html('An error occurred. Please try again.');
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
